@@ -1,0 +1,110 @@
+---
+
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  labels:
+    app: cfg-edit
+  name: cfg-edit
+  namespace: default
+
+---
+
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  labels:
+    app: cfg-edit
+  name: cfg-edit
+rules:
+  - apiGroups: [""]
+    resources: ["configmaps"]
+    verbs: ["get", "list", "watch", "update","patch"]
+
+---
+
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: cfg-edit
+  labels:
+    app: cfg-edit
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: cfg-edit
+subjects:
+  - kind: ServiceAccount
+    name: cfg-edit
+    namespace: default
+
+---
+
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  labels:
+    app: cfg-edit
+  name: cfg-edit
+  namespace: default
+spec:
+  replicas: 1
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      app: cfg-edit
+  template:
+    metadata:
+      labels:
+        app: cfg-edit
+    spec:
+      containers:
+        - name: cfg-edit
+          image: 192.168.56.21:5000/cfgedit:v0.0.1
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+              protocol: TCP
+          # livenessProbe:
+          #   httpGet:
+          #     scheme: HTTPS
+          #     path: /
+          #     port: 8443
+          #   initialDelaySeconds: 30
+          #   timeoutSeconds: 30
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            runAsUser: 1000
+            runAsGroup: 1000
+      serviceAccountName: cfg-edit
+      # nodeSelector:
+      #   "kubernetes.io/os": linux
+      # tolerations:
+      #   - key: "CriticalAddonsOnly"
+      #     operator: "Exists"
+      #   - key: node-role.kubernetes.io/master
+      #     effect: NoSchedule
+
+---
+
+kind: Service
+apiVersion: v1
+metadata:
+  labels:
+    app: cfg-edit
+  name: cfg-edit
+  namespace: default
+spec:
+  type: NodePort
+  ports:
+    - port: 8080
+      targetPort: 8080
+  selector:
+    app: cfg-edit
+
+---
+
+
+
+
