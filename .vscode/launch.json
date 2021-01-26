@@ -10,7 +10,8 @@
             "request": "launch",
             "mode": "debug",
             "program": "${workspaceFolder}/main.go",
-            "showLog": true
+            "showLog": true,
+            "args": ["--incluster=false", "--kubeconfig=/home/chris/.kube/config"]
         }
     ]
 }

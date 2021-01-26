@@ -12,7 +12,7 @@ import (
 
 var isInCluster = flag.Bool("incluster", true, "running in k8s cluster")
 
-func Init(r *gin.Engine) {
+func Init(r *gin.RouterGroup) {
 	if *isInCluster {
 		initInCfg()
 	} else {
@@ -21,8 +21,8 @@ func Init(r *gin.Engine) {
 	regRt(r)
 }
 
-func regRt(r *gin.Engine) {
-	r.GET("/api/v1/cfgs", func(c *gin.Context) {
+func regRt(r *gin.RouterGroup) {
+	r.GET("cfgs", func(c *gin.Context) {
 		ret := lstCfgs([]string{""})
 		if ret != nil {
 			c.JSON(200, ret)
@@ -30,7 +30,7 @@ func regRt(r *gin.Engine) {
 			c.AbortWithStatus(http.StatusInternalServerError)
 		}
 	})
-	r.GET("/api/v1/cfgs/:ns", func(c *gin.Context) {
+	r.GET("cfgs/:ns", func(c *gin.Context) {
 		ns := c.Param("ns")
 		ret := lstCfgs([]string{ns})
 		if ret != nil {
@@ -39,7 +39,7 @@ func regRt(r *gin.Engine) {
 			c.AbortWithStatus(http.StatusInternalServerError)
 		}
 	})
-	r.GET("/api/v1/cfgs/:ns/:name", func(c *gin.Context) {
+	r.GET("cfgs/:ns/:name", func(c *gin.Context) {
 		ns := c.Param("ns")
 		name := c.Param("name")
 		ret := getCfg(ns, name)
@@ -49,7 +49,7 @@ func regRt(r *gin.Engine) {
 			c.AbortWithStatus(http.StatusNotFound)
 		}
 	})
-	r.POST("/api/v1/cfgs/:ns/:name", func(c *gin.Context) {
+	r.POST("cfgs/:ns/:name", func(c *gin.Context) {
 		ns := c.Param("ns")
 		name := c.Param("name")
 		body, err := ioutil.ReadAll(c.Request.Body)

@@ -16,7 +16,7 @@ import (
 )
 
 var (
-	anno_k    = "cfgedit.io/enable"
+	anno_k    = "cfgedit/enable"
 	anno_v    = "true"
 	clientSet *kubernetes.Clientset
 
