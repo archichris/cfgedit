@@ -60,7 +60,7 @@ spec:
     spec:
       containers:
         - name: cfgedit
-          image: 192.168.56.21:5000/cfgedit:v0.0.1
+          image: swr.cn-north-1.myhuaweicloud.com/donghalcyon/editcfg:v1.0.0
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8080
@@ -105,6 +105,26 @@ spec:
     app: cfgedit
 
 ---
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: demo
+  annotations:
+    cfgedit/enable: 'true'
+data:
+  # property-like keys; each key maps to a simple value
+  player_initial_lives: "3"
+  ui_properties_file_name: "user-interface.properties"
+
+  # file-like keys
+  game.properties: |
+    enemy.types=aliens,monsters
+    player.maximum-lives=5
+  user-interface.properties: |
+    color.good=purple
+    color.bad=yellow
+    allow.textmode=true
 
 
 
